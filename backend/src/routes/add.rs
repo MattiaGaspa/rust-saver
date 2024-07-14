@@ -1,7 +1,6 @@
 use actix_web::{web::{self, Json}, HttpResponse};
 use sqlx::PgPool;
 use types::{Password, PasswordList};
-use uuid::Uuid;
 
 #[derive(serde::Deserialize)]
 pub struct FormData {
@@ -15,7 +14,7 @@ pub async fn add(form: web::Form<FormData>, pool: web::Data<PgPool>) -> HttpResp
         INSERT INTO passwords (id, name, password)
         VALUES ($1, $2, $3)
         "#,
-        Uuid::new_v4(),
+        uuid::Uuid::new_v4(),
         form.name,
         form.password
         )

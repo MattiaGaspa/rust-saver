@@ -5,8 +5,9 @@ use sqlx::PgPool;
 
 pub mod routes;
 pub mod configuration;
+
 use crate::routes::{health_check, add, remove};
-use crate::configuration::*;
+use configuration::*;
 
 #[actix_web::main]
 async fn main() {

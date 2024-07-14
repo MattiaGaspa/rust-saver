@@ -1,4 +1,4 @@
-use crate::ServerSettings;
+use super::ServerSettings;
 
 pub fn connect(server: ServerSettings) -> (String, u16) {
     (server.host, server.port)
