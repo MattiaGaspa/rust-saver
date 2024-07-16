@@ -23,11 +23,11 @@ async fn main() {
         .await
         .expect("Failed to connect to Postgres database.");
     let shared_pool = web::Data::new(pool);
-
+    
     let _server = HttpServer::new(move || {
     	// Configure CORS
 	    let cors = Cors::default()
-            .allowed_origin("http://127.0.0.1:8081")
+            .allowed_origin("http://localhost")
             .allowed_methods(vec!["GET", "POST"])
             .allowed_headers(vec![http::header::AUTHORIZATION, http::header::ACCEPT])
             .allowed_header(http::header::CONTENT_TYPE)

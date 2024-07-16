@@ -1,0 +1,52 @@
+services:
+  postgres:
+    image: postgres
+    environment:
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "password"
+      POSTGRES_DB: "passwords"
+      PGPASSWORD: "password"
+    ports:
+      - 5432
+
+  migration:
+    volumes:
+      - type: bind
+        source: ../
+        target: /app
+    build:
+      dockerfile: ../docker/Dockerfile.app
+    environment:
+      DATABASE_URL: "postgres://postgres:password@postgres:5432/passwords"
+    command: bash -c "cd app/backend && sqlx database create && sqlx migrate run"
+    depends_on:
+      - postgres
+
+  backend:
+    volumes:
+      - type: bind
+        source: ../
+        target: /app
+    build:
+      dockerfile: ../docker/Dockerfile.app
+    environment:
+      DATABASE_URL: "postgres://postgres:password@postgres:5432/passwords"
+    command: bash -c "cd app && cargo build --release --workspace && cd backend && cargo watch -x \"run --release --bin backend\""
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+      - migration
+
+  frontend:
+    volumes:
+      - type: bind
+        source: ../
+        target: /app
+    build:
+      dockerfile: ../docker/Dockerfile.app
+    command: bash -c "cd app/frontend && trunk serve --release"
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
