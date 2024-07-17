@@ -27,7 +27,7 @@ async fn main() {
     let _server = HttpServer::new(move || {
     	// Configure CORS
 	    let cors = Cors::default()
-            .allowed_origin("http://localhost")
+            .allowed_origin("http://127.0.0.1")
             .allowed_methods(vec!["GET", "POST"])
             .allowed_headers(vec![http::header::AUTHORIZATION, http::header::ACCEPT])
             .allowed_header(http::header::CONTENT_TYPE)
