@@ -6,3 +6,6 @@ up:
 
 down:
 	docker compose -f ./docker/docker-compose.yaml down
+
+clean:
+	cargo clean

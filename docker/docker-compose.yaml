@@ -31,7 +31,8 @@ services:
       dockerfile: ../docker/Dockerfile.app
     environment:
       DATABASE_URL: "postgres://postgres:password@postgres:5432/passwords"
-    command: bash -c "cd app && cargo build --release --workspace && cd backend && cargo watch -x \"run --release --bin backend\""
+      ENV: ${ENV:-debug}
+    command: bash -c "cd app/backend && bash start_backend.sh"
     ports:
       - "8080:8080"
     depends_on:
@@ -45,7 +46,9 @@ services:
         target: /app
     build:
       dockerfile: ../docker/Dockerfile.app
-    command: bash -c "cd app/frontend && trunk serve --release"
+    environment:
+      ENV: ${ENV:-debug}
+    command: bash -c "cd app/frontend && bash start_frontend.sh"
     ports:
       - "80:80"
     depends_on:
