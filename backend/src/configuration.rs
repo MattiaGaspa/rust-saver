@@ -1,6 +1,3 @@
-pub mod database;
-pub mod server;
-
 #[derive(serde::Deserialize, Clone, PartialEq)]
 pub struct Config {
     pub server: ServerSettings,
@@ -20,6 +17,27 @@ pub struct DatabaseSettings {
     pub port: u16,
     pub host: String,
     pub database_name: String,
+}
+
+impl ServerSettings {
+    pub fn connect(&self) -> (String, u16) {
+        (self.host.to_owned(), self.port)
+    }
+
+    pub fn connection_string(&self) -> String {
+        format!("{}:{}", self.host, self.port)
+    }    
+}
+
+impl DatabaseSettings {
+    pub fn connection_string(&self) -> String {
+        format!("postgres://{}:{}@postgres:{}/{}",
+            self.username,
+            self.password,
+            self.port,
+            self.database_name
+        )
+    }
 }
 
 pub fn get_config(filename: String) -> Result<Config, config::ConfigError> {

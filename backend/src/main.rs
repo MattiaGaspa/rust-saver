@@ -19,19 +19,22 @@ async fn main() {
         .expect("Failed to load settings.");
 
     // Connect to database
-    let pool = PgPool::connect(database::connection_string(config.database).as_str())
+    let pool = PgPool::connect(config.database.connection_string().as_str())
         .await
         .expect("Failed to connect to Postgres database.");
     let shared_pool = web::Data::new(pool);
     
     let _server = HttpServer::new(move || {
     	// Configure CORS
-	    let cors = Cors::default()
-            .allowed_origin("http://127.0.0.1")
-            .allowed_methods(vec!["GET", "POST"])
-            .allowed_headers(vec![http::header::AUTHORIZATION, http::header::ACCEPT])
-            .allowed_header(http::header::CONTENT_TYPE)
-        	.max_age(3600);
+        let cors = match std::env::var("ENV").unwrap().as_str() {
+            "debug" => Cors::permissive(),
+            &_ => Cors::default()
+                .allowed_origin("http://127.0.0.1")
+                .allowed_methods(vec!["GET", "POST"])
+                .allowed_headers(vec![http::header::AUTHORIZATION, http::header::ACCEPT])
+                .allowed_header(http::header::CONTENT_TYPE)
+                .max_age(3600),
+        };
 
         App::new()
             .wrap(Logger::default())
@@ -42,7 +45,7 @@ async fn main() {
             .route("/remove", web::post().to(remove::remove))
             .route("/show", web::get().to(add::show))
         })
-        .bind(server::connect(config.server))
+        .bind(config.server.connection_string())
         .unwrap()
         .run()
         .await;
